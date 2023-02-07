@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../store/AuthContext';
 function SignOut() {
-	const { isAuthenticated, updateLoginStatus, isAuth } = useContext(AuthContext);
+	const { updateLoginStatus, isAuth } = useContext(AuthContext);
 
 	return (
 		<div>
