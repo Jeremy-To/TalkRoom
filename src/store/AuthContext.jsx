@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { auth, provider } from '../firebase-config';
+import { auth, provider } from '../config/firebase-config';
 import { signOut, signInWithPopup } from 'firebase/auth';
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
@@ -26,8 +26,10 @@ export const AuthProvider = ({ children }) => {
 		cookies.remove('auth-token');
 		setIsAuth(false);
 		setIsInChat(false);
-		setIsAuthenticated(current => !current)
-		{isAuthenticated && signInWithGoogle()}
+		setIsAuthenticated((current) => !current);
+		{
+			isAuthenticated && signInWithGoogle();
+		}
 	};
 
 	const context = {
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 		isInChat,
 		room,
 		setRoom,
-    setIsInChat,
+		setIsInChat,
 	};
 
 	return (

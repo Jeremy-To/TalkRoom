@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '../../firebase-config';
+import { db, auth } from '../../config/firebase-config';
 import {
 	collection,
 	addDoc,
@@ -47,7 +47,6 @@ export const Chat = ({ room }) => {
 	};
 
 	return (
-		
 		<div className="h-3/4 w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border-2 border-solid border-blue-800 bg-white">
 			<div className="bg-blue-600 text-white w-full text-center">
 				<h1>{room.toUpperCase()}'s room</h1>
