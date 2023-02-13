@@ -1,9 +1,9 @@
 import React from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
-function Footer() {
+function About() {
 	return (
-		<div className="fixed bottom-0 w-full bg-gray-300 text-center p-2 flex items-center justify-between">
+		<div className=" fixed bottom-0 w-full bg-gray-300 text-center p-2 flex items-center justify-between">
 			<div className="italic ml-4 flex flex-col items-start">
 				<p>ChatApp lets you chat with the world</p>
 				<p>Made by Jérémy TO</p>
@@ -24,4 +24,4 @@ function Footer() {
 	);
 }
 
-export default Footer;
+export default About;

@@ -4,12 +4,12 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from '@firebase/firestore';
 
 const firebaseConfig = {
-	apiKey: 'AIzaSyBVbU5j-BCm9UfMztACGpynFDLBWammYGA',
-	authDomain: 'chat-1a09d.firebaseapp.com',
-	projectId: 'chat-1a09d',
-	storageBucket: 'chat-1a09d.appspot.com',
-	messagingSenderId: '1048020367320',
-	appId: '1:1048020367320:web:baf7ebd39faf426c7fa4ad',
+	apiKey: "AIzaSyCHmOs8M6sw3spMIz-sMz28DnvxKiS1Ee0",
+  authDomain: "ecommerce-dc7ea.firebaseapp.com",
+  projectId: "ecommerce-dc7ea",
+  storageBucket: "ecommerce-dc7ea.appspot.com",
+  messagingSenderId: "464326541032",
+  appId: "1:464326541032:web:cd44ee592536e79b0cd35d"
 };
 
 // Initialize Firebase

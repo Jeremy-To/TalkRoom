@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../../config/firebase-config';
+import React, { useState, useEffect, useContext } from 'react';
+import { db, auth } from '../config/firebase-config';
+import { Link } from 'react-router-dom';
 import {
 	collection,
 	addDoc,
@@ -9,12 +10,14 @@ import {
 	query,
 	orderBy,
 } from 'firebase/firestore';
+import { AuthContext } from '../store/AuthContext';
 
-export const Chat = ({ room }) => {
+export const Chat = () => {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState('');
 	const messagesRef = collection(db, 'messages');
-
+	const { room, setIsInChat } = useContext(AuthContext);
+	
 	useEffect(() => {
 		const queryMessages = query(
 			messagesRef,
@@ -47,7 +50,13 @@ export const Chat = ({ room }) => {
 	};
 
 	return (
-		<section className='w-full h-full '>
+		<section className="w-full h-full ">
+			<button
+				className="m-2 bg-white text-blue-600 hover:underline border rounded-md px-2 h-8 flex items-center"
+				onClick={() => setIsInChat((current) => !current)}
+			>
+				<Link to="/lobby">Return to lobby</Link>
+			</button>
 			<div className="bg-blue-400 text-white m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4">
 				<h1>{room.toUpperCase()}'s room</h1>
 			</div>
@@ -62,7 +71,7 @@ export const Chat = ({ room }) => {
 						</div>
 					))}
 				</div>
-				<form onSubmit={handleSubmit} className="flex w-full p-2">
+				<form onSubmit={handleSubmit} className="flex w-full p-2 flex-wrap">
 					<input
 						className="flex-grow text-sm border-solid border outline-none bg-transparent p-2 rounded-md"
 						type="text"
