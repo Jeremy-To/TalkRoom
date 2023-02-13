@@ -3,12 +3,15 @@ import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
 function About() {
 	return (
-		<div className=" fixed bottom-0 w-full bg-gray-300 text-center p-2 flex items-center justify-between">
-			<div className="italic ml-4 flex flex-col items-start">
+		<div className="text-center p-2 flex flex-col items-start justify-between gap-10 mt-10">
+      <div>
+        <p className='font-bold text-2xl text-blue-800'>Chat with your friend via a custom room or explore rooms !</p>
+      </div>
+			<div className="italic flex flex-col items-start">
 				<p>ChatApp lets you chat with the world</p>
 				<p>Made by Jérémy TO</p>
 			</div>
-			<ul className="flex px-8 list-none items-end gap-8 text-xl">
+			<ul className="flex gap-4 list-none items-end text-xl">
 				<li>
 					<a href="https://www.linkedin.com/in/jérémy-to/">
 						<FaLinkedin />
