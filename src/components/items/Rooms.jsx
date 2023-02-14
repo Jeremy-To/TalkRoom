@@ -58,11 +58,11 @@ export const Rooms = () => {
 	}, [roomsRef]);
 
 	return (
-		<section className="w-full h-full">
+		<section>
 			<div className="bg-blue-400 text-white m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4">
 				<h1>All rooms</h1>
 			</div>
-			<div className="h-3/4 w-3/4 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
+			<div className="h-3/4 w-3/4 p-28 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
 				<div className="flex flex-col items-start w-full h-4/5 overflow-y-auto p-2 mb-2">
 					{rooms.map((room) => (
 						<button

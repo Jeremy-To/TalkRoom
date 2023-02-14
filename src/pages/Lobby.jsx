@@ -17,9 +17,10 @@ function Lobby() {
   };
 
   return (
-    <section className="w-full mt-4 h-full flex justify-center">
+    <section className="w-full mt-4 h-full flex justify-center items-start flex-wrap">
       <Rooms />
-      <div className="mr-4 flex flex-col items-center">
+      <p className='mt-4 p-4'>OR</p>
+      <div className="mt-4 flex flex-col items-center justify-center">
         <label className="items-center text-xl mb-4">Enter custom room:</label>
         <input
           className="w-40 h-8 border-solid border-2 border-blue-200 rounded-md pl-2 text-sm text-center m-2"
