@@ -7,7 +7,7 @@ function Navbar() {
 	return (
 		<div className="flex items-center justify-between text-center text-blue-300 w-full bg-blue-800">
 			<h1 className="font-bold text-2xl m-2">
-				<Link to="/lobby">TalkRoom</Link>
+				<Link to="/">TalkRoom</Link>
 			</h1>
 
 			<div className="flex gap-2 items-center text-white  mx-2">

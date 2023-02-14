@@ -11,44 +11,57 @@ import {
 	orderBy,
 } from 'firebase/firestore';
 import { AuthContext } from '../store/AuthContext';
+import { debounce } from 'lodash';
 
 export const Chat = () => {
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState();
+	const [isSending, setIsSending] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
+	const { room, setIsInChat, errorMessage, setErrorMessage } = useContext(AuthContext);
 	const messagesRef = collection(db, 'messages');
-	const { room, setIsInChat } = useContext(AuthContext);
-	
+	const debouncedSetNewMessage = debounce(setNewMessage, 500);
+
 	useEffect(() => {
 		const queryMessages = query(
 			messagesRef,
 			where('room', '==', room),
 			orderBy('createdAt')
 		);
-		const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
-			let messages = [];
-			snapshot.forEach((doc) => {
-				messages.push({ ...doc.data(), id: doc.id });
+	
+		try {
+			const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+				let messages = [];
+				snapshot.forEach((doc) => {
+					messages.push({ ...doc.data(), id: doc.id });
+				});
+				setMessages(messages);
 			});
-			setMessages(messages);
-		});
-
-		return () => unsuscribe();
+			return () => unsubscribe();
+		} catch (error) {
+			setErrorMessage(error.message);
+		}
 	}, [messagesRef, room]);
 
-	const handleSubmit = async (event) => {
-		event.preventDefault();
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-		if (newMessage === '') return;
-		await addDoc(messagesRef, {
-			text: newMessage,
-			createdAt: serverTimestamp(),
-			user: auth.currentUser.displayName,
-			room,
-		});
+  if (newMessage === '') return;
 
-		setNewMessage('');
-	};
-
+  try {
+    setIsSending(true);
+    await addDoc(messagesRef, {
+      text: newMessage,
+      createdAt: serverTimestamp(),
+      user: auth.currentUser.displayName,
+      room,
+    });
+    setNewMessage('');
+  } catch (error) {
+		setErrorMessage(error.message);
+  } finally {
+    setIsSending(false);
+  }
+};
 	return (
 		<section className="w-full h-full ">
 			<button
@@ -72,18 +85,19 @@ export const Chat = () => {
 					))}
 				</div>
 				<form onSubmit={handleSubmit} className="flex w-full p-2 flex-wrap">
-					<input
+					<textarea
 						className="flex-grow text-sm border-solid border outline-none bg-transparent p-2 rounded-md"
 						type="text"
 						value={newMessage}
-						onChange={(event) => setNewMessage(event.target.value)}
+						onChange={(event) => debouncedSetNewMessage(event.target.value)}
 						placeholder="Type your message here..."
 					/>
 					<button
 						className="text-sm w-20 border-none rounded-md outline-none bg-blue-300 text-blue-800 font-bold"
 						type="submit"
+						disabled={isSending}
 					>
-						Send
+						{isSending ? 'Sending...' : 'Send'}
 					</button>
 				</form>
 			</div>

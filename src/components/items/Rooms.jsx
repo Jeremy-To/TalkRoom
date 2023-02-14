@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../../config/firebase-config';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import ToRoom from './ToRoom';
 
 export const Rooms = () => {
 	const [rooms, setRooms] = useState([]);
@@ -46,7 +45,16 @@ export const Rooms = () => {
 			<div className="h-3/4 w-3/4 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
 				<div className="flex flex-col items-start w-full h-4/5 overflow-y-auto p-2 mb-2">
 					{rooms.map((room) => (
-					<ToRoom room={room}/>
+						<button
+							key={room}
+							className="flex items-start mb-2 bg-white text-black rounded-md p-2 hover:bg-blue-700 hover:text-white active:bg-yellow-300"
+							onClick={({ room }) => {
+								authCtx.setRoom({ room });
+								authCtx.setIsInChat(true);
+							}}
+						>
+							<Link to="/chat"> {room}</Link>
+						</button>
 					))}
 				</div>
 			</div>

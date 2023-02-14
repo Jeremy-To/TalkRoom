@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
 	const [isAuth, setIsAuth] = useState(cookies.get('auth-token'));
 	const [isInChat, setIsInChat] = useState(null);
 	const [room, setRoom] = useState('');
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	const signInWithGoogle = async () => {
 		try {
@@ -19,8 +20,10 @@ export const AuthProvider = ({ children }) => {
 			setIsAuth(true);
 		} catch (err) {
 			console.error(err);
+			setErrorMessage(err.message);
 		}
 	};
+
 	const updateLoginStatus = async () => {
 		await signOut(auth);
 		cookies.remove('auth-token');
@@ -41,6 +44,8 @@ export const AuthProvider = ({ children }) => {
 		room,
 		setRoom,
 		setIsInChat,
+		errorMessage,
+		setErrorMessage,
 	};
 
 	return (
