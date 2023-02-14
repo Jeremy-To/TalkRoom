@@ -39,6 +39,7 @@ export const Chat = () => {
 			return () => unsubscribe();
 		} catch (error) {
 			setErrorMessage(error.message);
+			console.error(error);
 		}
 	}, [messagesRef, room]);
 
@@ -58,6 +59,7 @@ const handleSubmit = async (event) => {
     setNewMessage('');
   } catch (error) {
 		setErrorMessage(error.message);
+		console.error(error);
   } finally {
     setIsSending(false);
   }

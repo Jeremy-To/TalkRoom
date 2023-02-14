@@ -1,39 +1,59 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { db } from '../../config/firebase-config';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-
+import { AuthContext } from '../../store/AuthContext';
 export const Rooms = () => {
 	const [rooms, setRooms] = useState([]);
 	const roomsRef = collection(db, 'messages');
 	const unsuscribeRef = useRef();
-
+	const { setErrorMessage } = useContext(AuthContext);
 	useEffect(() => {
 		let intervalId;
-		unsuscribeRef.current = onSnapshot(query(roomsRef), (snapshot) => {
-			let newRooms = [];
-			snapshot.forEach((doc) => {
-				newRooms.push({ ...doc.data(), id: doc.id });
-			});
-			let uniqueRooms = [...new Set(newRooms.map((room) => room.room))];
-			setRooms(uniqueRooms);
-		});
+		const queryRef = query(roomsRef);
 
-		intervalId = setInterval(() => {
-			unsuscribeRef.current();
-			unsuscribeRef.current = onSnapshot(query(roomsRef), (snapshot) => {
+		const handleSnapshot = (snapshot) => {
+			try {
 				let newRooms = [];
 				snapshot.forEach((doc) => {
 					newRooms.push({ ...doc.data(), id: doc.id });
 				});
 				let uniqueRooms = [...new Set(newRooms.map((room) => room.room))];
 				setRooms(uniqueRooms);
-			});
-		}, 5000);
+			} catch (error) {
+				setErrorMessage(error.message);
+				console.error(error);
+			}
+		};
+
+		const startInterval = () => {
+			intervalId = setInterval(() => {
+				try {
+					unsuscribeRef.current();
+					unsuscribeRef.current = onSnapshot(queryRef, handleSnapshot);
+				} catch (error) {
+					setErrorMessage(error.message);
+					console.error(error);
+				}
+			}, 5000);
+		};
+
+		try {
+			unsuscribeRef.current = onSnapshot(queryRef, handleSnapshot);
+			startInterval();
+		} catch (error) {
+			setErrorMessage(error.message);
+			console.error(error);
+		}
 
 		return () => {
 			clearInterval(intervalId);
-			unsuscribeRef.current();
+			try {
+				unsuscribeRef.current();
+			} catch (error) {
+				setErrorMessage(error.message);
+				console.error(error);
+			}
 		};
 	}, [roomsRef]);
 
