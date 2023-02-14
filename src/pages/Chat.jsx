@@ -11,13 +11,13 @@ import {
 	orderBy,
 } from 'firebase/firestore';
 import { AuthContext } from '../store/AuthContext';
-import { debounce } from 'lodash';
+import debounce from 'lodash-es/debounce'
 
 export const Chat = () => {
 	const [messages, setMessages] = useState();
 	const [isSending, setIsSending] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
-	const { room, setIsInChat, errorMessage, setErrorMessage } = useContext(AuthContext);
+	const { room, setIsInChat, setErrorMessage } = useContext(AuthContext);
 	const messagesRef = collection(db, 'messages');
 	const debouncedSetNewMessage = debounce(setNewMessage, 500);
 
