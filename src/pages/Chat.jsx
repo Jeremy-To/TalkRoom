@@ -58,7 +58,7 @@ export const Chat = () => {
 				<Link to="/lobby">Return to lobby</Link>
 			</button>
 			<div className="bg-blue-400 text-white m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4">
-				<h1>{room.toUpperCase()}'s room</h1>
+				<h1 key={room}>{room}'s room</h1>
 			</div>
 			<div className="h-3/4 w-3/4 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800 bg-white">
 				<div className="flex flex-col items-start w-full h-4/5 overflow-y-auto p-2 mb-2">
