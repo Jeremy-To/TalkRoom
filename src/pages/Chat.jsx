@@ -77,7 +77,7 @@ const handleSubmit = async (event) => {
 			</div>
 			<div className="h-3/4 w-3/4 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800 bg-white">
 				<div className="flex flex-col items-start w-full h-4/5 overflow-y-auto p-2 mb-2">
-					{messages.map((message) => (
+					{messages!== undefined && messages.map((message) => (
 						<div key={message.id} className="flex items-start mb-2">
 							<span className="font-bold mr-2 text-blue-900">
 								{message.user}:
@@ -85,6 +85,7 @@ const handleSubmit = async (event) => {
 							{message.text}
 						</div>
 					))}
+					{messages === undefined && <div>Loading...</div>}
 				</div>
 				<form onSubmit={handleSubmit} className="flex w-full p-2 flex-wrap">
 					<textarea

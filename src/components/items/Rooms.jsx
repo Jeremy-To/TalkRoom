@@ -8,6 +8,7 @@ export const Rooms = () => {
 	const roomsRef = collection(db, 'messages');
 	const unsuscribeRef = useRef();
 	const { setErrorMessage } = useContext(AuthContext);
+
 	useEffect(() => {
 		let intervalId;
 		const queryRef = query(roomsRef);
@@ -46,6 +47,9 @@ export const Rooms = () => {
 			console.error(error);
 		}
 
+		//We need the line below because we are using useRef and we need to clean the memory
+		if(unsuscribeRef.current) unsuscribeRef.current();
+
 		return () => {
 			clearInterval(intervalId);
 			try {
@@ -57,17 +61,21 @@ export const Rooms = () => {
 		};
 	}, [roomsRef]);
 
+
+
 	return (
 		<section>
 			<div className="bg-blue-400 text-white m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4">
 				<h1>All rooms</h1>
 			</div>
 			<div className="h-3/4 w-3/4 p-28 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
-				<div className="flex flex-col items-start w-full h-4/5 overflow-y-auto p-2 mb-2">
+				<div className="flex flex-col items-start overflow-y-auto p-2 mb-2">
+					{rooms.length === 0 && ( <p className="text-red-500">No rooms yet, please create one</p> )}
+					{rooms.length > 0 && ( <p className="text-green-500">Click on a room to enter</p> )}
 					{rooms.map((room) => (
 						<button
 							key={room}
-							className="flex items-start mb-2 bg-white text-black rounded-md p-2 hover:bg-blue-700 hover:text-white active:bg-yellow-300"
+							className="p-4 flex items-start mb-2 bg-white text-black rounded-md hover:bg-blue-700 hover:text-white active:bg-yellow-300"
 							onClick={({ room }) => {
 								authCtx.setRoom({ room });
 								authCtx.setIsInChat(true);
