@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { Chat } from './pages/Chat';
+import Chat from './pages/Chat';
 import Lobby from './pages/Lobby';
 import { SignIn } from './pages/SignIn.jsx';
 import { Layout } from './components/layout/Layout';

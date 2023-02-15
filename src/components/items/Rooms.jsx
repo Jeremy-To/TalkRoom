@@ -1,87 +1,91 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { db } from '../../config/firebase-config';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import React, { useEffect, useContext, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../store/AuthContext';
+import { db } from '../../config/firebase-config';
+import { collection, onSnapshot } from 'firebase/firestore';
+import useSocket from '../customhooks/useSocket';
+
 export const Rooms = () => {
-	const [rooms, setRooms] = useState([]);
-	const roomsRef = collection(db, 'messages');
-	const unsuscribeRef = useRef();
+	const rooms = useSocket();
+	const messagesRef = collection(db, 'messages');
 	const { setErrorMessage } = useContext(AuthContext);
+	const [uniqueRooms, setUniqueRooms] = useState([]);
 
-	useEffect(() => {
-		let intervalId;
-		const queryRef = query(roomsRef);
-
-		const handleSnapshot = (snapshot) => {
-			try {
-				let newRooms = [];
-				snapshot.forEach((doc) => {
-					newRooms.push({ ...doc.data(), id: doc.id });
-				});
-				let uniqueRooms = [...new Set(newRooms.map((room) => room.room))];
-				setRooms(uniqueRooms);
-			} catch (error) {
-				setErrorMessage(error.message);
-				console.error(error);
-			}
-		};
-
-		const startInterval = () => {
-			intervalId = setInterval(() => {
-				try {
-					unsuscribeRef.current();
-					unsuscribeRef.current = onSnapshot(queryRef, handleSnapshot);
-				} catch (error) {
-					setErrorMessage(error.message);
-					console.error(error);
-				}
-			}, 5000);
-		};
-
+	const handleNewSnapshot = (snapshot) => {
 		try {
-			unsuscribeRef.current = onSnapshot(queryRef, handleSnapshot);
-			startInterval();
+			const newRooms = snapshot.docs.map((doc) => doc.data().room);
+			const updatedUniqueRooms = [...new Set(newRooms)];
+			setUniqueRooms(updatedUniqueRooms);
 		} catch (error) {
 			setErrorMessage(error.message);
 			console.error(error);
 		}
+	};
 
-		//We need the line below because we are using useRef and we need to clean the memory
-		if(unsuscribeRef.current) unsuscribeRef.current();
+	const startSnapshotInterval = () => {
+		const queryRef = collection(db, 'messages');
+		let unsubscribeRef;
 
-		return () => {
-			clearInterval(intervalId);
-			try {
-				unsuscribeRef.current();
-			} catch (error) {
-				setErrorMessage(error.message);
-				console.error(error);
-			}
+		const handleSnapshotUpdate = (snapshot) => {
+			const newRooms = snapshot.docs.map((doc) => doc.data().room);
+			const updatedUniqueRooms = [...new Set(newRooms)];
+			setUniqueRooms(updatedUniqueRooms);
 		};
-	}, [roomsRef]);
 
+		const snapshotIntervalId = setInterval(() => {
+			unsubscribeRef();
+			unsubscribeRef = onSnapshot(queryRef, handleSnapshotUpdate);
+		}, 30000);
 
+		unsubscribeRef = onSnapshot(queryRef, handleSnapshotUpdate);
+
+		return snapshotIntervalId;
+	};
+
+	useEffect(() => {
+		const unsubscribe = onSnapshot(messagesRef, handleNewSnapshot);
+
+		return () => unsubscribe();
+	}, []);
+
+	useEffect(() => {
+		const snapshotIntervalId = startSnapshotInterval();
+
+		return () => clearInterval(snapshotIntervalId);
+	}, []);
+
+	const authCtx = useContext(AuthContext);
+
+	const handleRoomClick = useCallback(
+		(room) => {
+			authCtx.setRoom(room);
+			authCtx.setIsInChat(true);
+		},
+		[authCtx]
+	);
 
 	return (
 		<section>
 			<div className="bg-blue-400 text-white m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4">
 				<h1>All rooms</h1>
 			</div>
-			<div className="h-3/4 w-3/4 p-28 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
-				<div className="flex flex-col items-start overflow-y-auto p-2 mb-2">
-					{rooms.length === 0 && ( <p className="text-red-500">No rooms yet, please create one</p> )}
-					{rooms.length > 0 && ( <p className="text-green-500">Click on a room to enter</p> )}
-					{rooms.map((room) => (
+			<div className=' m-auto rounded-md w-3/4 lg:w-1/2 text-2xl text-center my-4'>
+					{uniqueRooms.length === 0 && (
+						<p className="text-red-500">No rooms yet, please create one</p>
+					)}
+					{uniqueRooms.length > 0 && (
+						<p className="text-green-500">Click on a room to enter</p>
+					)}
+				</div>
+			<div className="h-3/4 w-3/4 px-28 py-10 lg:w-1/2 m-auto flex flex-col items-center rounded-md overflow-hidden border border-solid border-blue-800">
+				<div className="flex flex-col items-start overflow-y-auto mb-2">
+					{uniqueRooms.map((room) => (
 						<button
 							key={room}
 							className="p-4 flex items-start mb-2 bg-white text-black rounded-md hover:bg-blue-700 hover:text-white active:bg-yellow-300"
-							onClick={({ room }) => {
-								authCtx.setRoom({ room });
-								authCtx.setIsInChat(true);
-							}}
+							onClick={() => handleRoomClick(room)}
 						>
-							<Link to="/chat"> {room}</Link>
+							<Link to="/chat">{room}</Link>
 						</button>
 					))}
 				</div>
