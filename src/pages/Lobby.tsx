@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../store/AuthContext';
 import { Rooms } from '../components/items/Rooms';
@@ -7,7 +7,7 @@ function Lobby() {
 	const { setRoom, setIsInChat } = useContext(AuthContext);
 	const [room, setLocalRoom] = useState('');
 
-	const handleRoomChange = (event) => {
+	const handleRoomChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setLocalRoom(event.target.value);
 	};
 

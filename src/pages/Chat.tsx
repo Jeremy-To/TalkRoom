@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import { db, auth } from '../config/firebase-config';
 import { Link } from 'react-router-dom';
 import {
@@ -9,26 +9,37 @@ import {
 	onSnapshot,
 	query,
 	orderBy,
+	QueryDocumentSnapshot,
+	QuerySnapshot,
 } from 'firebase/firestore';
 import { AuthContext } from '../store/AuthContext';
 import debounce from 'lodash-es/debounce';
 
+type MessageType = {
+	id: string;
+	text: string;
+	createdAt: Date;
+	user: string;
+	room: string;
+};
+
 function Chat() {
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [isSending, setIsSending] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
 	const { room, setIsInChat, setErrorMessage } = useContext(AuthContext);
 	const messagesRef = collection(db, 'messages');
-	const debouncedSetNewMessage = useCallback(debounce(setNewMessage,), []);
+	const debouncedSetNewMessage = useCallback(debounce(setNewMessage), []);
 
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
 			query(messagesRef, where('room', '==', room), orderBy('createdAt')),
-			(snapshot) => {
-				const messages = snapshot.docs.map((doc) => ({
-					...doc.data(),
+			(snapshot: QuerySnapshot) => {
+				const messages = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 					id: doc.id,
-				}));
+					...doc.data(),
+					createdAt: doc.data().createdAt.toDate(),
+				})) as MessageType[];
 				setMessages(messages);
 			},
 			(error) => {
@@ -40,7 +51,7 @@ function Chat() {
 		return unsubscribe;
 	}, [messagesRef, room, setErrorMessage]);
 
-	const handleSubmit = async (event) => {
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
 		if (newMessage === '') {
@@ -52,11 +63,11 @@ function Chat() {
 			await addDoc(messagesRef, {
 				text: newMessage,
 				createdAt: serverTimestamp(),
-				user: auth.currentUser.displayName,
+				user: auth.currentUser?.displayName,
 				room,
 			});
 			setNewMessage('');
-		} catch (error) {
+		} catch (error: string | any) {
 			setErrorMessage(error.message);
 			console.error(error);
 		} finally {
@@ -93,7 +104,7 @@ function Chat() {
 				<form onSubmit={handleSubmit} className="flex w-full p-2 flex-wrap">
 					<textarea
 						className="flex-grow text-sm border-solid border outline-none bg-transparent p-2 rounded-md"
-						type="text"
+						typeof='text'
 						value={newMessage}
 						onChange={(event) => debouncedSetNewMessage(event.target.value)}
 						placeholder="Type your message here..."

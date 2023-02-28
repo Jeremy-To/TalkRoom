@@ -5,7 +5,7 @@
 --------------------------------
 
 ### Features:
-* Responsive Ui built with ReactJs 
+* Responsive Ui built with React and Typescript 
 * Back-End handled with Firebase Firestore
 * Css wrote with Tailwind 
 * Built with React Context provider

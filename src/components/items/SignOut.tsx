@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../../store/AuthContext';
 function SignOut() {
 	const { updateLoginStatus, isAuth } = useContext(AuthContext);
